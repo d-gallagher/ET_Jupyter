@@ -1,0 +1,10 @@
+
+{% extends "layout.html" %}
+{% block content %}
+  <canvas id="MNISTCanvas" width="300" height="250"></canvas>
+
+  <form >
+    <button name="btnClear" title="ClearCanvas" onclick="clearCanvas()">Clear</button>
+    <button name="btnSubmit" method="post" id="btnPredict" >Predict</button>
+  </form>
+{% endblock content %}
