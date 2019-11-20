@@ -1,0 +1,35 @@
+
+<!-- Bootstrap template: https://getbootstrap.com/docs/4.3/getting-started/introduction/ -->
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8">
+    <title>MNIST Number Prediction</title>
+<style>
+*{
+    font-size: 30px;
+}
+    </style>
+
+</head>
+
+<body>
+    <input id="name-input" type="text"/>
+    <button id="name-button">Submit Name</button>
+    <p id="greeting">Greeting: </p>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#name-button").click(function(e){
+            let message = {
+                name: $("#name-input").val()
+            }
+            console.log(JSON.stringify(message));
+            $.post("http://0.0.0.0:5050/postmethod/", JSON.stringify(message), function(response){
+                $("#greeting").text(response.greeting);
+                console.log(response);
+            });
+        });
+    </script>
+
+</body>
+</html>

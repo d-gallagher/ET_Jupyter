@@ -1,8 +1,9 @@
 from flask import Flask, escape, request, render_template, url_for, jsonify
+from flask_cors import CORS
 import uuid
 
 app = Flask(__name__)
-# app.debug="True"
+CORS(app)
 
 # Main project page
 @app.route('/')
@@ -14,13 +15,24 @@ def homePage():
 def aboutPage():
     return render_template('about.html')
 
+# About the project
+@app.route('/testPage',methods = ['GET'])
+def testPage():
+    # # Using Force - Always try and parse data as JSON
+    # message = request.get_json(force=True)
+    # name = message['name']
+    # response = { 'greeting' : 'Response, ' + name + '..' }
+    return render_template('testPage.html')
+
 # Retrieve post
 @app.route('/postmethod', methods = ['POST'])
 def post_javascript_data():
-    jsdata = request.form['canvas_data']
-    unique_id = create_csv(jsdata)
-    params = { 'uuid' : unique_id }
-    return jsonify(params)
+    print(request.form.to_dict())
+    # Using Force - Always try and parse data as JSON
+    message = request.get_json(force=True)
+    name = message['name']
+    response = { 'greeting' : 'Response, ' + name + '..' }
+    return jsonify(response)
 
 # Create and save csv of image data
 def create_csv(text):
