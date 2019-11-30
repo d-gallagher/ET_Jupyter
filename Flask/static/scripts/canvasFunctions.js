@@ -8,7 +8,7 @@
         radius = 5,
         dot_flag = false;
 
-    var x = "black",
+    var x = "blue",
         y = 2;
 
     // Init the canvas, add lesteners to catch mouse function
@@ -51,25 +51,49 @@
         var m = confirm("Erase the Canvas?");
         if (m) {
             ctx.clearRect(0, 0, w, h);
-            document.getElementById("MNISTCanvas").style.display = "none";
         }
     }
 
-    // Save the image for use in NN Model
+    // Handles Data from html to flask and returnData from flask
     function getData() {
-        
+        // grab the canvas on the page
         var canvas = document.getElementById("MNISTCanvas");
-        console.log(canvas.toDataURL());
-        // var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        // var data = imageData.data;
-        // var outputData = []
-        // for(var i = 0; i < data.length; i += 4) {
-        // var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-        // outputData.push(brightness);
-        // }
-        // $.post( "/postmethod", {
-        // canvas_data: JSON.stringify(outputData)
-        // });
+        // get base 64 encoded image
+        var canvasUrl = canvas.toDataURL();
+        // split the text from the url
+        var imgData = canvasUrl.split(',')[1];
+        // console.log(canvasUrl);
+        console.log(imgData);
+
+        // Data obj for the canvas
+        let canvasEntry = {
+            data: imgData
+        }
+
+        // https://pythonise.com/series/learning-flask/flask-and-fetch-api
+        fetch(`${window.origin}/postmethod`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(canvasEntry),
+            cache: "no-cache",
+            headers: new Headers({
+                "content-type": "application/json"
+            })
+            })
+            .then(function (response) {
+                if (response.status !== 200) {
+                console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                return;
+                }
+                response.json().then(function (data) {
+                console.log(data);
+                document.getElementById("imageUrl").innerText = data.returnData;
+                });
+            })
+            .catch(function (error) {
+                console.log("Fetch error: " + error);
+            });
+
     }
 
     // Find mouse (x,y) position takes listener and event

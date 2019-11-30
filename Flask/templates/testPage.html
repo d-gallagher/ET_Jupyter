@@ -15,20 +15,55 @@
 
 <body>
     <input id="name-input" type="text"/>
-    <button id="name-button">Submit Name</button>
+    <button id="name-button" onclick="output()">Submit Name</button>
     <p id="greeting">Greeting: </p>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
-        $("#name-button").click(function(e){
-            let message = {
-                name: $("#name-input").val()
-            }
-            console.log(JSON.stringify(message));
-            $.post("http://0.0.0.0:5050/postmethod/", JSON.stringify(message), function(response){
-                $("#greeting").text(response.greeting);
-                console.log(response);
+        // $("#name-button").click(function(e){
+        //     let message = {
+        //         name: $("#name-input").val()
+        //     }
+        //     console.log(JSON.stringify(message));
+        //     $.post("http://0.0.0.0:5050/postmethod/", JSON.stringify(message), function(response){
+        //         $("#greeting").text(response.greeting);
+        //         console.log(response);
+        //     });
+        // });
+
+        function output(){
+        // find user input on page
+        var userinput = document.getElementById("name-input");
+        // build object from user input
+        let entry = {
+            name: userinput.value
+        }
+
+        // https://pythonise.com/series/learning-flask/flask-and-fetch-api
+
+        fetch(`${window.origin}/postmethod`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(entry),
+            cache: "no-cache",
+            headers: new Headers({
+                "content-type": "application/json"
+            })
+            })
+            .then(function (response) {
+                if (response.status !== 200) {
+                console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                return;
+                }
+                response.json().then(function (data) {
+                console.log(data);
+                document.getElementById("greeting").innerText = "Greeting:" + data.greeting;
+                });
+            })
+            .catch(function (error) {
+                console.log("Fetch error: " + error);
             });
-        });
+
+        }
     </script>
 
 </body>

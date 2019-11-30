@@ -44,14 +44,22 @@
         </div>
     </header>
 
+    
     <main role="main" class="container">
-      
-      <canvas id="MNISTCanvas" width="300" height="250"></canvas>
+        <div>
+        <canvas id="MNISTCanvas" width="300" height="250"></canvas>
+        </div>
+        <div>
+            <button name="btnClear" title="ClearCanvas" onclick="clearCanvas()">Clear</button>
+            <button name="btnSubmit" id="btnPredict" onclick="getData()" >Predict</button>
+        </div>
+        <div>
+            <textarea id="imageUrl" width="500" height="500"></textarea>
+        </div>
 
-      <form>
-          <button name="btnClear" title="ClearCanvas" onclick="clearCanvas()">Clear</button>
-          <button name="btnSubmit" id="btnPredict" onclick="getData()" >Predict</button>
-        </form>
+        <div class="text-center">
+            <h2 id="numberprediction">Your prediction will display here..</h2>
+        </div>
     </main>
     
   </body>
