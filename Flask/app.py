@@ -1,11 +1,17 @@
 from flask import Flask, escape, request, render_template, url_for, jsonify, make_response
 from flask_cors import CORS
+import tensorflow as tf
 import uuid
 
 app = Flask(__name__)
 CORS(app)
 
+def loadKerasModel():
+    model = tf.keras.models.load_model('numberPredictor.h5')
+    return model
 
+# Load the Trained Model
+kModel = loadKerasModel()
 
 # Main project page
 @app.route('/')
