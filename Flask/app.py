@@ -5,14 +5,22 @@ import numpy as np
 
 from flask import Flask, escape, request, render_template, url_for, jsonify, make_response
 from flask_cors import CORS
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageOps
 from matplotlib import pyplot as plt
-from scipy.misc import imread
-from keras.preprocessing.image import ImageDataGenerator
-from keras.preprocessing.image import img_to_array
+from scipy.misc import imread, imresize
 
 app = Flask(__name__)
 CORS(app)
+
+global graph
+"""
+Running into issues after reshapint my image consistent with my NN model - 
+ValueError: Tensor Tensor("dense_5/Softmax:0", shape=(?, 10), dtype=float32) is not an element of this graph.
+https://datascience.stackexchange.com/questions/48984/valueerror-tensor-tensoractivation-5-softmax0-shape-2-dtype-float32
+proposed solution:
+"""
+graph = tf.get_default_graph()
+
 
 def loadKerasModel():
     model = tf.keras.models.load_model('numberPredictor.h5')
@@ -20,6 +28,7 @@ def loadKerasModel():
 
 # Load the Trained Model
 kModel = loadKerasModel()
+
 
 # Main project page
 @app.route('/')
@@ -52,17 +61,43 @@ def post_javascript_data():
     with open('image.png', 'wb') as im:
         im.write(decodedCanvasData)
     # read saved image in as grayscale
-    x = imread('output.png', mode='L')
+    im = imread('image.png', mode='L')
     # ValueError: Error when checking input: expected flatten_input to have 3 dimensions, but got array with shape (250, 300)
-    prediction = kModel.predict(x).toList() 
+    
+    print("im.shape original")
+    print(im.shape)
 
+    imResized = imresize(im, (28,28))
+    print("imResized.shape resized")
+    print(imResized.shape)
+    
+    
+    # imReshaped = np.reshape(imResized, (1,28,28))
+    imReshaped = tf.keras.utils.normalize(imResized, axis=1)
+    imReshaped = np.reshape(imResized, (1,28,28))
+    print("imResized.shape reshaped")
+    print(imReshaped.shape)
+
+    """
+    See above issue res proposal using graph.
+    Current Issue:
+    Error while reading resource variable dense_4/kernel from Container: localhost. 
+    This could mean that the variable was uninitialized. 
+    Not found: Resource localhost/dense_4/kernel/class tensorflow::Var does not exist.
+    Proposed Solution: https://github.com/tensorflow/tensorflow/issues/28287 - Unresolved with this solution
+    """
+    with graph.as_default():
+        prediction = kModel.predict([imReshaped])
+    
     print("prediction")
-    print(prediction)
+    print(np.argmax(prediction))
+    
+    # print(prediction)
 
     dataToReturn = canvasData['data']
     response = { 'returnData' : dataToReturn }
-    print("response") 
-    print(response) 
+    # print("response") 
+    # print(response) 
     return response
 
 
