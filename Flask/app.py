@@ -2,24 +2,36 @@ import tensorflow as tf
 import base64
 import io
 import numpy as np
+import keras
 
 from flask import Flask, escape, request, render_template, url_for, jsonify, make_response
-from flask_cors import CORS
+from tensorflow.python.keras.backend import set_session
+# from flask_cors import CORS
 from PIL import Image, ImageFilter, ImageOps
 from matplotlib import pyplot as plt
 from scipy.misc import imread, imresize
 
-app = Flask(__name__)
-CORS(app)
 
-global graph
+
+app = Flask(__name__)
+# CORS(app)
+
+# https://github.com/tensorflow/cleverhans/issues/1117
+session = keras.backend.get_session()
+init = tf.global_variables_initializer()
+session.run(init)
+
+global model, graph, sess
+# tf_config = app.config
+# sess = tf.Session()
+graph = tf.get_default_graph()
 """
 Running into issues after reshapint my image consistent with my NN model - 
 ValueError: Tensor Tensor("dense_5/Softmax:0", shape=(?, 10), dtype=float32) is not an element of this graph.
 https://datascience.stackexchange.com/questions/48984/valueerror-tensor-tensoractivation-5-softmax0-shape-2-dtype-float32
 proposed solution:
 """
-graph = tf.get_default_graph()
+
 
 
 def loadKerasModel():
@@ -27,7 +39,7 @@ def loadKerasModel():
     return model
 
 # Load the Trained Model
-kModel = loadKerasModel()
+model = loadKerasModel()
 
 
 # Main project page
@@ -60,9 +72,9 @@ def post_javascript_data():
     # https://stackoverflow.com/questions/2323128/convert-string-in-base64-to-image-and-save-on-filesystem-in-python
     with open('image.png', 'wb') as im:
         im.write(decodedCanvasData)
+
     # read saved image in as grayscale
     im = imread('image.png', mode='L')
-    # ValueError: Error when checking input: expected flatten_input to have 3 dimensions, but got array with shape (250, 300)
     
     print("im.shape original")
     print(im.shape)
@@ -73,10 +85,12 @@ def post_javascript_data():
     
     
     # imReshaped = np.reshape(imResized, (1,28,28))
-    imReshaped = tf.keras.utils.normalize(imResized, axis=1)
-    imReshaped = np.reshape(imResized, (1,28,28))
+    # imReshaped = tf.keras.utils.normalize(imResized, axis=1)
+    imReshaped = np.array(imResized, dtype=np.float32).reshape(1,784)
+    imReshaped /=255
     print("imResized.shape reshaped")
     print(imReshaped.shape)
+    print("Config", app.config)
 
     """
     See above issue res proposal using graph.
@@ -87,8 +101,9 @@ def post_javascript_data():
     Proposed Solution: https://github.com/tensorflow/tensorflow/issues/28287 - Unresolved with this solution
     """
     with graph.as_default():
-        prediction = kModel.predict([imReshaped])
-    
+        # set_session(sess)
+        prediction = model.predict(imReshaped)
+
     print("prediction")
     print(np.argmax(prediction))
     
