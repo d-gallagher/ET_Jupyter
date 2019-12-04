@@ -22,6 +22,10 @@ Build a client and server application using [Flask](http://flask.palletsprojects
 * [Visual Studio Code](https://code.visualstudio.com/) a lightweight and prominent cross-platform IDE for development.
 * [Cmder](https://cmder.net/) a better console/terminal for windows.
 * [Github](https://git-scm.com/downloads) to clone and use this repository.
+* [Jupyter Notebook](https://jupyter.org/), [A Quick guide to get started](https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/), and a great [resource](https://github.com/jupyter/jupyter/wiki/A-gallery-of-interesting-Jupyter-Notebooks) for further learning!
+
+### [Neural Network](https://github.com/d-gallagher/ET_Jupyter/blob/master/Learning_MNIST%20DNN.ipynb) 
+The NN powering the digit recognition is explained in more detail here with references to resources and research materials used in this project.
 
 ### How to use this repository.
 **! _IMPORTANT_: You will need Git [installed locally](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git). I also reccommend using [Anaconda](https://www.anaconda.com/distribution/), which includes the packages used in this project.**
