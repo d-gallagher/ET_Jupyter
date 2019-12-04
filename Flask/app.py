@@ -83,7 +83,8 @@ def post_javascript_data():
     Error while reading resource variable dense_4/kernel from Container: localhost. 
     This could mean that the variable was uninitialized. 
     Not found: Resource localhost/dense_4/kernel/class tensorflow::Var does not exist.
-    Proposed Solution: https://github.com/tensorflow/tensorflow/issues/28287 - Unresolved with this solution
+    Proposed Solution: https://github.com/tensorflow/tensorflow/issues/28287 
+    Resolved - Session needs to be set before calling the model predict.
     """
 
     with sess.as_default():
