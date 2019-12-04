@@ -5,7 +5,7 @@ import numpy as np
 import keras
 
 from flask import Flask, escape, request, render_template, url_for, jsonify, make_response
-from tensorflow.python.keras.backend import set_session
+# from tensorflow.python.keras.backend import set_session
 # from flask_cors import CORS
 from PIL import Image, ImageFilter, ImageOps
 from matplotlib import pyplot as plt
@@ -16,15 +16,15 @@ from scipy.misc import imread, imresize
 app = Flask(__name__)
 # CORS(app)
 
-# https://github.com/tensorflow/cleverhans/issues/1117
-session = keras.backend.get_session()
-init = tf.global_variables_initializer()
-session.run(init)
+# # https://github.com/tensorflow/cleverhans/issues/1117
+# session = keras.backend.get_session()
+# init = tf.global_variables_initializer()
+# session.run(init)
 
 global model, graph, sess
-# tf_config = app.config
-# sess = tf.Session()
+sess = tf.InteractiveSession()
 graph = tf.get_default_graph()
+
 """
 Running into issues after reshapint my image consistent with my NN model - 
 ValueError: Tensor Tensor("dense_5/Softmax:0", shape=(?, 10), dtype=float32) is not an element of this graph.
@@ -61,6 +61,7 @@ def testPage():
 # Retrieve post
 @app.route('/postmethod', methods = ['POST'])
 def post_javascript_data():
+    global model, graph
     # print(request.form.to_dict())
     # Get the request with the image data (Force - Always try and parse data as JSON)
     canvasData = request.get_json(force=True)
@@ -76,21 +77,21 @@ def post_javascript_data():
     # read saved image in as grayscale
     im = imread('image.png', mode='L')
     
-    print("im.shape original")
-    print(im.shape)
+    # print("im.shape original")
+    # print(im.shape)
 
     imResized = imresize(im, (28,28))
-    print("imResized.shape resized")
-    print(imResized.shape)
+    # print("imResized.shape resized")
+    # print(imResized.shape)
     
     
     # imReshaped = np.reshape(imResized, (1,28,28))
     # imReshaped = tf.keras.utils.normalize(imResized, axis=1)
     imReshaped = np.array(imResized, dtype=np.float32).reshape(1,784)
     imReshaped /=255
-    print("imResized.shape reshaped")
-    print(imReshaped.shape)
-    print("Config", app.config)
+    # print("imResized.shape reshaped")
+    # print(imReshaped.shape)
+    # print("Config", app.config)
 
     """
     See above issue res proposal using graph.
@@ -100,17 +101,19 @@ def post_javascript_data():
     Not found: Resource localhost/dense_4/kernel/class tensorflow::Var does not exist.
     Proposed Solution: https://github.com/tensorflow/tensorflow/issues/28287 - Unresolved with this solution
     """
-    with graph.as_default():
-        # set_session(sess)
-        prediction = model.predict(imReshaped)
+
+    with sess.as_default():
+        with graph.as_default():        
+            prediction = model.predict(imReshaped)
 
     print("prediction")
     print(np.argmax(prediction))
     
     # print(prediction)
 
-    dataToReturn = canvasData['data']
-    response = { 'returnData' : dataToReturn }
+    # dataToReturn = canvasData['data']
+    # dataToReturn = [prediction]
+    response = { 'returnData' : prediction }
     # print("response") 
     # print(response) 
     return response

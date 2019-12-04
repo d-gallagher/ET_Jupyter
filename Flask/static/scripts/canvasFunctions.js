@@ -87,7 +87,8 @@
                 }
                 response.json().then(function (data) {
                 console.log(data);
-                document.getElementById("imageUrl").innerText = data.returnData;
+                // document.getElementById("imageUrl").innerText = data.returnData;
+                document.getElementById("numberprediction").innerText = data.returnData;
                 });
             })
             .catch(function (error) {
