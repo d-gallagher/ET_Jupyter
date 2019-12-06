@@ -8,9 +8,10 @@
         radius = 5,
         dot_flag = false;
 
-    var x = "blue",
+    var x = "white",
         y = 2;
 
+    var listOfPercentages = new Object;
     // Init the canvas, add lesteners to catch mouse function
     function init() {
         canvas = document.getElementById('MNISTCanvas');
@@ -48,10 +49,10 @@
 
     // Clear the canvas
     function clearCanvas() {
-        var m = confirm("Erase the Canvas?");
-        if (m) {
+        // var m = confirm("Erase the Canvas?");
+        // if (m) {
             ctx.clearRect(0, 0, w, h);
-        }
+        // }
     }
 
     // Handles Data from html to flask and returnData from flask
@@ -63,7 +64,7 @@
         // split the text from the url
         var imgData = canvasUrl.split(',')[1];
         // console.log(canvasUrl);
-        console.log(imgData);
+        // console.log(imgData);
 
         // Data obj for the canvas
         let canvasEntry = {
@@ -86,15 +87,44 @@
                 return;
                 }
                 response.json().then(function (data) {
-                console.log(data);
-                // document.getElementById("imageUrl").innerText = data.returnData;
-                document.getElementById("numberprediction").innerText = data.returnData;
+                // console.log(data);
+                listOfPercentages = data.returnAllPredictions;
+                console.log(JSON.parse(listOfPercentages));
+                
+                // var jsonData = JSON.parse(listOfPercentages);
+                // for (var i = 0; i < jsonData.returnData.length; i++) {
+                //     var counter = jsonData.returnData[i];
+                //     console.log(counter[0]);
+                // }
+                // console.log(JSON.parse(listOfPercentages));
+                document.getElementById("numberprediction").innerText = data.returnPredictionResult;
                 });
             })
             .catch(function (error) {
                 console.log("Fetch error: " + error);
             });
 
+    }
+
+    // Send data from post method for the chart
+    function myChartData(){
+
+        var jsonData = JSON.parse(listOfPercentages);
+        for (var i = 0; i < jsonData.returnData.length; i++) {
+            var counter = jsonData.returnData[i];
+            console.log(jsonData.returnData.length);
+            console.log(counter[2]);
+        }
+        // var dataList = [];
+        // var jsonData = JSON.parse(listOfPercentages);
+        // for (var i = 0; i < jsonData.returnData.length; i++) {
+        //     var predictedPercentage = jsonData.returnData[i];
+        //     dataList.push(predictedPercentage);
+        //     console.log(predictedPercentage[0]);
+        // }
+        // console.log(dataList);
+        // return dataList;
+        console.log("jsonData.returnData[0]", jsonData.returnData[0]);
     }
 
     // Find mouse (x,y) position takes listener and event

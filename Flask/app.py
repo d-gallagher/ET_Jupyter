@@ -94,13 +94,15 @@ def post_javascript_data():
     print("prediction")
     print(np.argmax(prediction))
 
-    # Return the response to our client
-    response = { 'returnData' : str(np.argmax(prediction)) }
+    
 
     # Dumping out the array
     json_dump = json.dumps({ 'returnData' : prediction }, cls=NumpyEncoder)
     print(json_dump)    
 
+    # Return the response to our client
+    response = { 'returnPredictionResult' : str(np.argmax(prediction)),
+                 'returnAllPredictions' : json_dump}
     return response
     
 #  Snippet - json encode the response data (is used in console for now)
