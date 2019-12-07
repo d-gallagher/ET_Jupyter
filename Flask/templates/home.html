@@ -52,58 +52,119 @@
         </div>
         <div>
             <button name="btnClear" id="ClearCanvas" onclick="clearCanvas()">Clear</button>
-            <button name="btnSubmit" id="btnPredict" onclick="getData()">Predict</button>
-            <button name="btnSubmit" onclick="myChartData()">PrintToConsole</button>
+            <button name="btnSubmit" id="btnPredict" onclick="getData()" >Predict</button>
+            <!-- <button name="btnSubmit" onclick="myChartData()">PrintToConsole</button> -->
         </div>
             <div class="text-center">
             <h2 id="numberprediction">Your prediction will display here..</h2>
         </div>
         <div id="chart">
-            <canvas id="myChart" onload="myChartData()"></canvas>
-            <script>
-            var ctx = document.getElementById('myChart').getContext('2d');
-            // var chartData = myChartData();
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'],
-                    datasets: [{
-                        label: 'Prediction Results',
-                        data: [0,1,2,3,4,5],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                }
-            });
-            </script>
-
+            <canvas id="myChart"></canvas>
         </div>
     </main>
     
+    <script>
+     
+    var listOfPercentages = new Object;
+    var dataForChart = new Array();
+
+    // Handles Data from html to flask and returnData from flask
+    function getData() {
+    // grab the canvas on the page
+    var canvas = document.getElementById("MNISTCanvas");
+    // get base 64 encoded image
+    var canvasUrl = canvas.toDataURL();
+    // split the text from the url
+    var imgData = canvasUrl.split(',')[1];
+    // console.log(canvasUrl);
+    // console.log(imgData);
+
+    // Data obj for the canvas
+    let canvasEntry = {
+        data: imgData
+    }
+
+    // https://pythonise.com/series/learning-flask/flask-and-fetch-api
+    fetch(`${window.origin}/postmethod`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(canvasEntry),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+        })
+        .then(function (response) {
+            if (response.status !== 200) {
+            console.log(`Looks like there was a problem. Status code: ${response.status}`);
+            return;
+            }
+            response.json().then(function (data) {
+            listOfPercentages = data.returnAllPredictions;
+            // Grab list of prediction percentages and convert to floats
+            var jsonData = JSON.parse(listOfPercentages);
+            dataForChart = jsonData.returnData[0];
+            for (var i = 0; i < dataForChart.length; i++) {
+                dataForChart[i] = parseFloat(dataForChart[i]);
+                // dataForChart[i] *= 10;
+                // dataForChart[i] = parseInt(dataForChart[i]);
+            }
+
+            console.log("dataForChart:",dataForChart);
+            document.getElementById("numberprediction").innerText = data.returnPredictionResult;
+            });
+        })
+        .catch(function (error) {
+            console.log("Fetch error: " + error);
+        });
+
+    } // End getData
+
+    // Set up chart
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'],
+            datasets: [{
+                label: 'Prediction Results',
+                data: [dataForChart],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    </script>
   </body>
   </html>
 
