@@ -20,7 +20,6 @@ app = Flask(__name__)
 # Set Global Variables used in POST method
 global model, graph, sess
 """
-See above issue res proposal using graph.
 Resolved Issue: When sending predicted results back to the Client, the following error interrupted the response.
 Error while reading resource variable dense_4/kernel from Container: localhost. 
 This could mean that the variable was uninitialized. 
