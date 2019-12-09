@@ -1,5 +1,3 @@
-
-
 <!-- Bootstrap template: https://getbootstrap.com/docs/4.3/getting-started/introduction/ -->
 <!DOCTYPE html>
 <html>
@@ -38,7 +36,6 @@
                 <ul class="nav navbar-nav navbar-left">
                     <li><a href="/">Home</a></li>
                     <li><a href="/about">About</a></li>
-                    <!-- <li><a href="/testPage">Test</a></li> -->
                 </ul>
                 </div>
             </nav>
@@ -53,7 +50,6 @@
         <div>
             <button name="btnClear" id="ClearCanvas" onclick="clearCanvas()">Clear</button>
             <button name="btnSubmit" id="btnPredict" onclick="getData()" >Predict</button>
-            <!-- <button name="btnSubmit" onclick="myChartData()">PrintToConsole</button> -->
         </div>
             <div class="text-center">
             <h2 id="numberprediction">Your prediction will display here..</h2>
@@ -64,7 +60,7 @@
     </main>
     
     <script>
-     
+    // Holding data for the Chart Display 
     var listOfPercentages = new Object;
     var dataForChart = new Array();
 
@@ -76,15 +72,13 @@
     var canvasUrl = canvas.toDataURL();
     // split the text from the url
     var imgData = canvasUrl.split(',')[1];
-    // console.log(canvasUrl);
-    // console.log(imgData);
-
     // Data obj for the canvas
     let canvasEntry = {
         data: imgData
     }
 
     // https://pythonise.com/series/learning-flask/flask-and-fetch-api
+    // Send post method with payload of JSON Image data from canvas to the Flask Application.
     fetch(`${window.origin}/postmethod`, {
         method: "POST",
         credentials: "include",
@@ -93,34 +87,45 @@
         headers: new Headers({
             "content-type": "application/json"
         })
-        })
+        })// Retrieve the response from the Flask application
         .then(function (response) {
+            // Handle any error and inform the user in the console with the status (for testing)
             if (response.status !== 200) {
             console.log(`Looks like there was a problem. Status code: ${response.status}`);
             return;
             }
+            // Take the successful response and process the data
             response.json().then(function (data) {
+            // We take a JSON object with two items - the prediction and the list of prediction percentages.
+            // Seperate the percentages into an object (We set the Key:Val in Flask before sending)
             listOfPercentages = data.returnAllPredictions;
-            // Grab list of prediction percentages and convert to floats
+            // Parse the object as JSON for processing
             var jsonData = JSON.parse(listOfPercentages);
+            // Take the array of data from the object
             dataForChart = jsonData.returnData[0];
+            // Loop through the array and convert to floats
             for (var i = 0; i < dataForChart.length; i++) {
                 dataForChart[i] = parseFloat(dataForChart[i]);
+                // Further processing here proved unneccessary. I thought the chart was not displaying floats (Hence *10 convert to Int).
+                // However the Chart is actually displaying the Value Axis as 0.0 - 1.0,
+                // which infers that it's seeing the array data but not displaying it..?
                 // dataForChart[i] *= 10;
                 // dataForChart[i] = parseInt(dataForChart[i]);
             }
 
+            // Log the array of data to the console - Chart isn't giving me the data so this will do as a backup for reviewing results.
             console.log("dataForChart:",dataForChart);
             document.getElementById("numberprediction").innerText = data.returnPredictionResult;
             });
         })
+        // Catch any unexpected errors and log them to console.
         .catch(function (error) {
             console.log("Fetch error: " + error);
         });
 
     } // End getData
 
-    // Set up chart
+    // Set up chart - https://www.chartjs.org/docs/latest/
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'bar',
@@ -128,7 +133,7 @@
             labels: ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'],
             datasets: [{
                 label: 'Prediction Results',
-                data: [dataForChart],
+                data: dataForChart,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
