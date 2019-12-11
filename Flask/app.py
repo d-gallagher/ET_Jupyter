@@ -119,5 +119,6 @@ class NumpyEncoder(json.JSONEncoder):
 # Host: localhost
 # Port: 5050 
 # Debug true: Allows reloading of app during development.(Disable before launching anything for production).
+ # , debug=True - disabled while testing on Herkou.
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5050) # , debug=True - disabled while testing on Herkou.
+    app.run(host='0.0.0.0', port=5050)
