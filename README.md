@@ -33,6 +33,12 @@ Currently deployed on Heroku but I'm getting an [error](https://github.com/d-gal
 ### How to use this repository.
 **! _IMPORTANT_: You will need Git [installed locally](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git). I also reccommend using [Anaconda](https://www.anaconda.com/distribution/), which includes the packages used in this project.**
 
+**You will need to install Tensorflow separately (using pip or conda):** 
+* This project uses tensorflow version 1.14.0 and will not run if using tensorflow 2.0.0.
+* The project was developed using Python 3.7.4.
+
+
+
 ##### Open terminal/console in your directory.
 * Clone this repository:
 ```
