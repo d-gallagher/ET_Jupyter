@@ -10,6 +10,7 @@ import numpy as np
 import keras
 import json
 import imageio
+import os
 
 from flask import Flask, escape, request, render_template, url_for, jsonify, make_response
 from PIL import Image
@@ -117,8 +118,9 @@ class NumpyEncoder(json.JSONEncoder):
 # App Run
 # Start application 
 # Host: localhost
-# Port: 5050 
+# Port: 5050  - get from environ to run flask on Heroku
+port = int(os.environ.get('PORT', 5050))
 # Debug true: Allows reloading of app during development.(Disable before launching anything for production).
  # , debug=True - disabled while testing on Herkou.
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5050)
+    app.run(host='0.0.0.0', port=port)
