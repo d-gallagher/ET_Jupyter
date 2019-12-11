@@ -27,7 +27,7 @@ Build a client and server application using [Flask](http://flask.palletsprojects
 ### [Neural Network](https://github.com/d-gallagher/ET_Jupyter/blob/master/Learning_MNIST%20DNN.ipynb) 
 The NN powering the digit recognition is explained in more detail here with references to resources and research materials used in this project.
 ### Hosting on [Heroku](www.heroku.com)
-Currently deployed on Heroku but I'm getting an error which I don't have time to resolve before submission. This is unfortunate but I will resolve it in the future.
+Currently deployed on Heroku but I'm getting an [error](https://github.com/d-gallagher/ET_Jupyter/issues/3) which I don't have time to resolve before submission. This is unfortunate but I will resolve it in the future.
 [Here is the app](https://mnist-number-prediction.herokuapp.com/) for future reference, stay tuned!
 
 ### How to use this repository.
