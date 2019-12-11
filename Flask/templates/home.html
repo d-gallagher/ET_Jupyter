@@ -44,15 +44,18 @@
 
     
     <main role="main" class="container">
-        <div>
-        <canvas id="MNISTCanvas"></canvas>
-        </div>
-        <div>
-            <button name="btnClear" id="ClearCanvas" onclick="clearCanvas()">Clear</button>
-            <button name="btnSubmit" id="btnPredict" onclick="getData()" >Predict</button>
-        </div>
-            <div class="text-center">
-            <h2 id="numberprediction">Your prediction will display here..</h2>
+        <div id="canvas+buttons+prediction" class="text-center">
+            <div><h2>Digit Analysis - Draw on the canvas.</h2></div>
+            <div>
+            <canvas id="MNISTCanvas"></canvas>
+            </div>
+            <div>
+                <button name="btnClear" id="ClearCanvas" onclick="clearCanvas()">Clear</button>
+                <button name="btnSubmit" id="btnPredict" onclick="getData()" >Predict</button>
+            </div>
+            <div>
+                <h2 id="numberprediction">Your prediction will display here..</h2>
+            </div>
         </div>
         <div id="chart">
             <canvas id="myChart"></canvas>
@@ -96,26 +99,32 @@
             }
             // Take the successful response and process the data
             response.json().then(function (data) {
+
             // We take a JSON object with two items - the prediction and the list of prediction percentages.
             // Seperate the percentages into an object (We set the Key:Val in Flask before sending)
             listOfPercentages = data.returnAllPredictions;
+
             // Parse the object as JSON for processing
             var jsonData = JSON.parse(listOfPercentages);
+
             // Take the array of data from the object
             dataForChart = jsonData.returnData[0];
+
             // Loop through the array and convert to floats
             for (var i = 0; i < dataForChart.length; i++) {
                 dataForChart[i] = parseFloat(dataForChart[i]);
-                // Further processing here proved unneccessary. I thought the chart was not displaying floats (Hence *10 convert to Int).
-                // However the Chart is actually displaying the Value Axis as 0.0 - 1.0,
-                // which infers that it's seeing the array data but not displaying it..?
-                // dataForChart[i] *= 10;
-                // dataForChart[i] = parseInt(dataForChart[i]);
             }
 
             // Log the array of data to the console - Chart isn't giving me the data so this will do as a backup for reviewing results.
-            console.log("dataForChart:",dataForChart);
+            // console.log("dataForChart:",dataForChart);
+
+            // Update the predicted number output for the user
             document.getElementById("numberprediction").innerText = data.returnPredictionResult;
+
+            // Update the chart with the predictions data.
+            // Adapted from https://www.chartjs.org/docs/latest/developers/updates.html
+            myChart.data.datasets.forEach((dataset) => dataset.data = dataForChart)
+            myChart.update()
             });
         })
         // Catch any unexpected errors and log them to console.
@@ -135,26 +144,28 @@
                 label: 'Prediction Results',
                 data: dataForChart,
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
+                    '#36413e',
+                    '#ed9b40',
+                    '#586a6a',
+                    '#ff1b1c',
+                    '#ff7f11',
+                    '#5d8fc1',
+                    '#a4d9e9',
+                    '#fcfc62',
+                    '#fabc3c',
+                    '#ffdda1'
                 ],
                 borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
+                    '#ffdda1',
+                    '#fabc3c',
+                    '#fcfc62',
+                    '#a4d9e9',
+                    '#5d8fc1',
+                    '#ff7f11',
+                    '#ff1b1c',
+                    '#586a6a',
+                    '#ed9b40',
+                    '#36413e'
                 ],
                 borderWidth: 1
             }]
